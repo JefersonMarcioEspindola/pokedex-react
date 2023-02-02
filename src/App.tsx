@@ -1,7 +1,14 @@
 import React from 'react';
+import Pokedex from './pokedex/Pokedex';
 
-const App: React.FC = () => {
-  return <h1>holla</h1>
+interface AppProps {
+  
 }
+
+export const App: React.FC<AppProps> = () => {
+  return (
+    <Pokedex />
+  );
+};
 
 export default App;
