@@ -1,21 +1,16 @@
-import React from 'react';
-import { Route, Link } from "react-router-dom";
-import Pokedex from './pokedex/Pokedex';
+import { BrowserRouter as Router, Route, Routes, Navigate} from "react-router-dom";
+import Pokedex from "./pokedex/Pokedex";
+import PokemonDetails from "./pokemon/services/PokemonDetails";
 
-interface RoutesProps {}
-
-export const Routes: React.FC<RoutesProps> = () => {
+const AppRoutes = ()  => {
     return (
-        <>
-            <Route path="/pokemons">
-                <h1>Pokemon</h1>
-            </Route>
+        <Router>
+            <Routes>
+                <Route path="/" element={<Pokedex />}> </Route>
+                <Route path="/pokemon" element={<PokemonDetails/>}> </Route>
+            </Routes>
+        </Router>
+    )
+}
 
-            <Route path="/">
-                <Pokedex />
-            </Route>
-        </>
-    );
-};
-
-export default Routes;
+export default AppRoutes;
