@@ -1,81 +1,74 @@
-import React, { useEffect, useState } from "react";
-import { PokemonsDetails } from "../pokemon/interfaces/pokemonDetails";
-import { getPokemonsDetails } from "../pokemon/services/getPokemonDetails";
-import {
-  listPokemons,
-  PokemonListInterface,
-} from "../pokemon/services/listPokemons";
+import { AppBar, Toolbar, IconButton, Typography, Container, Grid, Button, LinearProgress, Badge } from '@mui/material';
+import { Favorite, Menu as MenuIcon } from '@mui/icons-material';
+import React, { useContext } from 'react';
+import { useQuery } from 'react-query';
+import { listPokemons } from '../pokemon/services/listPokemons';
+import PokedexCard from './components/PokedexCard';
 
-import AppBar from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
-import Typography from "@mui/material/Typography";
-import Button from "@mui/material/Button";
-import IconButton from "@mui/material/IconButton";
-import MenuIcon from "@mui/icons-material/Menu";
-import {
-  Container,
-  Grid,
-  Box,
-  CardActions,
-  Card,
-  CardContent,
-} from "@mui/material";
+import CircularProgress from '@mui/material/CircularProgress';
+import { Box } from '@mui/system';
+import { useHistory } from 'react-router-dom';
+import { FavoriteContext } from '../favorites/contexts/FavoriteContext';
 
-interface PokedexProps {}
+interface PokedexProps {
+
+}
 
 const Pokedex: React.FC<PokedexProps> = () => {
-  const [pokemons, setPokemons] = useState<PokemonListInterface[]>([]);
-  const [selectedPokemon, setSelectedPokemon] = useState<PokemonListInterface | undefined >(undefined);
+  const { favorites } = useContext(FavoriteContext);
+  const { push } = useHistory();
+  const { data, isLoading, isRefetching, refetch } = useQuery(`listPokemons`, listPokemons);
 
-  useEffect(() => {
-    listPokemons().then((response) => setPokemons(response.results));
-  }, []);
+  const favoritesCount = favorites.length;
 
   return (
     <div>
-      <Box sx={{ flexGrow: 1 }}>
-        <AppBar position="static">
-          <Toolbar>
+      <AppBar position="static">
+        <Toolbar>
+          <Typography variant="h6" >
+            Pokedex
+          </Typography>
+          <Box sx={{ flexGrow: 1 }} />
+          <Box sx={{ display: { xs: 'flex', md: 'none' } }}>
             <IconButton
               size="large"
-              edge="start"
+              aria-label="show more"
+              aria-haspopup="true"
+              onClick={() => push('/favoritos')}
               color="inherit"
-              aria-label="menu"
-              sx={{ mr: 2 }}
             >
-              <MenuIcon />
+              <Badge badgeContent={favoritesCount} color="secondary">
+                <Favorite />
+              </Badge>
             </IconButton>
-            <Typography variant="h6" component="div" sx={{ flexGrow: 1 }}>
-              Pokedex
-            </Typography>
-            <Button color="inherit">Login</Button>
-          </Toolbar>
-        </AppBar>
-      </Box>
+          </Box>
+          {/* <Button variant="outlined" startIcon={<Favorite />}>
+            Delete
+          </Button> */}
+        </Toolbar>
+      </AppBar>
+      {isRefetching && <LinearProgress color='secondary' />}
 
-      <Grid container>
-        {pokemons.map((pokemon) => (
-          <>
-            <Grid item xs={6} lg={3}>
-              <Card sx={{ minWidth: 275 }}>
-                <CardContent>
-                  <Typography variant="h5" component="div">
-                    {pokemon.name}
-                  </Typography>
-                </CardContent>
-                <CardActions>
-                  <Button
-                    onClick={() => setSelectedPokemon(pokemon)}
-                    size="small"
-                  >
-                    Abrir
-                  </Button>
-                </CardActions>
-              </Card>
-            </Grid>
-          </>
-        ))}
-      </Grid>
+      <Container>
+        <div style={{ marginTop: `1em` }}>
+          {isLoading ? (
+            <>
+              <CircularProgress />
+            </>
+          ) : (
+            <>
+              <Button onClick={() => refetch()}>refetch</Button>
+              <Grid container spacing={2}>
+                {data?.results.map((pokemon) => (
+                  <Grid item xs={12} sm={6} md={4} lg={3} key={pokemon.name}>
+                    <PokedexCard pokemon={pokemon} />
+                  </Grid>
+                ))}
+              </Grid>
+            </>
+          )}
+        </div>
+      </Container>
     </div>
   );
 };

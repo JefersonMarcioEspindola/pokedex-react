@@ -1,16 +1,27 @@
-import { BrowserRouter as Router, Route, Routes, Navigate} from "react-router-dom";
-import Pokedex from "./pokedex/Pokedex";
-import PokemonDetails from "./pokemon/services/PokemonDetails";
+import React from 'react';
+import { Route, Switch } from 'react-router-dom';
+import FavoriteScreen from './favorites/FavoriteScreen';
+import Pokedex from './pokedex/Pokedex';
+import PokemonDetails from './pokemon/PokemonDetails';
 
-const AppRoutes = ()  => {
-    return (
-        <Router>
-            <Routes>
-                <Route path="/" element={<Pokedex />}> </Route>
-                <Route path="/pokemon" element={<PokemonDetails/>}> </Route>
-            </Routes>
-        </Router>
-    )
+interface RoutesProps {
+
 }
 
-export default AppRoutes;
+export const Routes: React.FC<RoutesProps> = () => {
+  return (
+    <Switch>
+      <Route path='/pokemon/:name'>
+        <PokemonDetails />
+      </Route>
+      <Route path='/favoritos'>
+        <FavoriteScreen />
+      </Route>
+      <Route path='/'>
+        <Pokedex />
+      </Route>
+    </Switch>
+  );
+};
+
+export default Routes;
